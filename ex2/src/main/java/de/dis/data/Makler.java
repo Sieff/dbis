@@ -151,7 +151,7 @@ public class Makler {
 				pstmt.executeUpdate();
 
 				pstmt.close();
-				System.out.println("Makler mit der Login "+getLogin()+" wurde bearbeitet.");
+				System.out.println("Makler mit dem Login " + getLogin() + " wurde bearbeitet.");
 			} else {
 				// Falls schon eine ID vorhanden ist, mache ein Update...
 				String updateSQL = "INSERT INTO estate_agent(name, address, login, password) VALUES (?, ?, ?, ?)";
@@ -166,7 +166,7 @@ public class Makler {
 				pstmt.executeUpdate();
 
 				pstmt.close();
-				System.out.println("Makler mit dem Login "+ this.getLogin()+" wurde erzeugt.");
+				System.out.println("Makler mit dem Login "+ getLogin()+" wurde erzeugt.");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
