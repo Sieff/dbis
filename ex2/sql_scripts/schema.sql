@@ -1,9 +1,10 @@
 drop table if exists estate_agent cascade;
 create table estate_agent (
-  name varchar (255),
-  address varchar (255),
-  login varchar (255) primary key,
-  password varchar (255)
+    id serial primary key,
+    name varchar (255),
+    address varchar (255),
+    login varchar (255) unique,
+    password varchar (255)
 );
 
 drop table if exists estate cascade;
@@ -14,7 +15,7 @@ create table estate (
     street varchar (255),
     street_nr integer,
     square_area decimal,
-    agent_id varchar (255) references estate_agent(login)
+    agent_id integer references estate_agent(id)
 );
 
 -- vertical partitioning

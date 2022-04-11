@@ -94,12 +94,12 @@ public class Main {
 		m.setAddress(FormUtil.readString("Adresse"));
 		m.setLogin(FormUtil.readString("Login"));
 		m.setPassword(FormUtil.readString("Passwort"));
-		m.insert();
+		m.save();
 	}
 
 	public static void editMakler() {
 		String login = FormUtil.readString("Login");
-		Makler estate_agent = Makler.load(login);
+		Makler estate_agent = Makler.loadByLogin(login);
 
 		if (estate_agent != null) {
 			//Menüoptionen
@@ -108,6 +108,13 @@ public class Main {
 			final int LOGIN = 2;
 			final int PASSWORD = 3;
 			final int ABORT = 4;
+
+			System.out.println("Ausgewählter Makler:");
+			System.out.println("Name: " + estate_agent.getName());
+			System.out.println("Adresse: " + estate_agent.getAddress());
+			System.out.println("Login: " + estate_agent.getLogin());
+			System.out.println("Passwort: " + estate_agent.getPassword());
+			System.out.println("");
 
 			Menu editMenu = new Menu("Welches Attribut soll bearbeitet werden?");
 			editMenu.addEntry("Name", NAME);
@@ -136,18 +143,18 @@ public class Main {
 					case ABORT:
 						return;
 				}
-				estate_agent.update();
+				estate_agent.save();
 			}
 
 		} else {
-			System.out.print("Makler mit dem Login " + login + " wurde nicht gefunden.");
+			System.out.println("Makler mit dem Login " + login + " wurde nicht gefunden.");
 		}
 
 	}
 
 	public static void deleteMakler() {
 		String login = FormUtil.readString("Login");
-		Makler estate_agent = Makler.load(login);
+		Makler estate_agent = Makler.loadByLogin(login);
 		//Menüoptionen
 		final int DELETE = 0;
 		final int ABORT = 1;

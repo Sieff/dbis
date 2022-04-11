@@ -16,14 +16,19 @@ import java.sql.SQLException;
  * );
  */
 public class Makler {
+	private int id;
 	private String name;
 	private String address;
 	private String login;
 	private String password;
 
+	public int getId() { return id; }
+
 	public String getName() {
 		return name;
 	}
+
+	public void setId(int id) { this.id = id; }
 
 	public void setName(String name) {
 		this.name = name;
@@ -58,7 +63,7 @@ public class Makler {
 	 * @param login ID des zu ladenden Maklers
 	 * @return Makler-Instanz
 	 */
-	public static Makler load(String login) {
+	public static Makler loadByLogin(String login) {
 		try {
 			// Hole Verbindung
 			Connection con = DbConnectionManager.getInstance().getConnection();
@@ -68,17 +73,48 @@ public class Makler {
 			PreparedStatement pstmt = con.prepareStatement(selectSQL);
 			pstmt.setString(1, login);
 
+			return Makler.load(pstmt);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Lädt einen Makler aus der Datenbank
+	 * @param id ID des zu ladenden Maklers
+	 * @return Makler-Instanz
+	 */
+	public static Makler loadById(int id) {
+		try {
+			// Hole Verbindung
+			Connection con = DbConnectionManager.getInstance().getConnection();
+
+			// Erzeuge Anfrage
+			String selectSQL = "SELECT * FROM estate_agent WHERE id = ?";
+			PreparedStatement pstmt = con.prepareStatement(selectSQL);
+			pstmt.setInt(1, id);
+			return Makler.load(pstmt);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private static Makler load(PreparedStatement statement) {
+		try {
 			// Führe Anfrage aus
-			ResultSet rs = pstmt.executeQuery();
+			ResultSet rs = statement.executeQuery();
 			if (rs.next()) {
 				Makler ts = new Makler();
+				ts.setId(rs.getInt("id"));
 				ts.setName(rs.getString("name"));
 				ts.setAddress(rs.getString("address"));
 				ts.setLogin(rs.getString("login"));
 				ts.setPassword(rs.getString("password"));
 
 				rs.close();
-				pstmt.close();
+				statement.close();
 				return ts;
 			}
 		} catch (SQLException e) {
@@ -97,13 +133,13 @@ public class Makler {
 
 		try {
 			// FC<ge neues Element hinzu, wenn das Objekt noch keine ID hat.
-			Makler existingEntity = Makler.load(this.login);
+			Makler existingEntity = Makler.loadById(getId());
 
 
 			if (existingEntity != null) {
 				// makler existiert schon, update machen
 
-				String updateSQL = "UPDATE estate_agent SET name = ?, address = ?, login = ?, password = ? WHERE login = ?";
+				String updateSQL = "UPDATE estate_agent SET name = ?, address = ?, login = ?, password = ? WHERE id = ?";
 				PreparedStatement pstmt = con.prepareStatement(updateSQL);
 
 				// Setze Anfrage Parameter
@@ -111,14 +147,14 @@ public class Makler {
 				pstmt.setString(2, getAddress());
 				pstmt.setString(3, getLogin());
 				pstmt.setString(4, getPassword());
-				pstmt.setInt(5, getLogin());
+				pstmt.setInt(5, getId());
 				pstmt.executeUpdate();
 
 				pstmt.close();
 				System.out.println("Makler mit der Login "+getLogin()+" wurde bearbeitet.");
 			} else {
 				// Falls schon eine ID vorhanden ist, mache ein Update...
-				String updateSQL = "INSERT estate_agent set name = ?, address = ?, login = ?, password = ? WHERE login = ?";
+				String updateSQL = "INSERT INTO estate_agent(name, address, login, password) VALUES (?, ?, ?, ?)";
 				PreparedStatement pstmt = con.prepareStatement(updateSQL);
 
 				// Setze Anfrage Parameter
@@ -126,7 +162,6 @@ public class Makler {
 				pstmt.setString(2, getAddress());
 				pstmt.setString(3, getLogin());
 				pstmt.setString(4, getPassword());
-				pstmt.setString(5, getLogin());
 
 				pstmt.executeUpdate();
 
@@ -145,13 +180,12 @@ public class Makler {
 	public void delete() {
 		Connection con = DbConnectionManager.getInstance().getConnection();
 		try {
-			String updateSQL = "DELETE FROM estate_agent WHERE login = ?";
+			String updateSQL = "DELETE FROM estate_agent WHERE id = ?";
 			PreparedStatement pstmt = con.prepareStatement(updateSQL);
-			pstmt.setString(1, getLogin()););
-			pstmt.setString(1, login);
+			pstmt.setInt(1, getId());
 
 			// Führe Anfrage aus
-			pstmt.executeQuery();
+			pstmt.executeUpdate();
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
