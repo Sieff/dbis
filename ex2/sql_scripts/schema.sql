@@ -72,16 +72,16 @@ create table purchase_contract (
 
 drop table if exists rent cascade;
 create table rent (
-    contract_id integer references contract(contract_number),
+    contract_number integer references tenancy_contract(contract_number),
     renter_id integer references person(id),
     apartment_id integer references apartment(id),
-    primary key (contract_id, apartment_id)
+    primary key (contract_number, apartment_id)
 );
 
 drop table if exists sell cascade;
 create table sell (
-    contract_id integer references contract(contract_number),
+    contract_number integer references purchase_contract(contract_number),
     buyer_id integer references person(id),
     house_id integer references house(id),
-    primary key (contract_id, house_id)
+    primary key (contract_number, house_id)
 );

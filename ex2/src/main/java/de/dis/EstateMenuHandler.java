@@ -55,8 +55,8 @@ public class EstateMenuHandler {
 
         final int NEW_APARTMENT = 0;
         final int NEW_HOUSE = 1;
-        //Objektverwaltungsmenü
 
+        //Objektverwaltungsmenü
         Menu estateCreationMenu = new Menu("Objekt-Erstellung");
 
         System.out.println("Was für ein Object soll erstellt werden?");
