@@ -55,7 +55,7 @@ public class EstateMenuHandler {
 
         final int NEW_APARTMENT = 0;
         final int NEW_HOUSE = 1;
-        //Objektverwaltungsme2ü
+        //Objektverwaltungsmenü
 
         Menu estateCreationMenu = new Menu("Objekt-Erstellung");
 
@@ -105,206 +105,199 @@ public class EstateMenuHandler {
 
 
     private static void editEstate() {
-        final int APARTMENT = 0;
-        final int HOUSE = 1;
-        final int BACK = 2;
+        int id = FormUtil.readInt("ID des Objekts");
 
-        //Objektverwaltungsmenü
+        Estate estate = Estate.loadById(id);
 
-        Menu estateCreationMenu = new Menu("Was für ein Objekt soll editiert werden?");
+        if (estate != null) {
 
-        estateCreationMenu.addEntry("Apartment", APARTMENT);
-        estateCreationMenu.addEntry("Haus", HOUSE);
-        estateCreationMenu.addEntry("Zurück", BACK);
+            if (estate.getAgent_Id() == agent.getId()) {
+
+                Apartment apartment = Apartment.loadByEstate(estate);
+                if (apartment != null) {
+                    editApartment(apartment);
+                    return;
+                }
+
+                House house = House.loadByEstate(estate);
+                if (house != null) {
+                    editHouse(house);
+                    return;
+                }
+            } else {
+                System.out.println("Kein Zugriff auf Objekt mit der ID " + id + " möglich.");
+            }
+        } else {
+            System.out.println("Objekt mit der ID " + id + " wurde nicht gefunden.");
+        }
+
+    }
+
+    private static void editApartment(Apartment apartment) {
+
+        //Menüoptionen
+        final int STREET = 0;
+        final int STREET_NR = 1;
+        final int CITY = 2;
+        final int POSTAL_CODE = 3;
+        final int SQUARE_AREA = 4;
+        final int FLOOR = 5;
+        final int RENT = 6;
+        final int ROOMS = 7;
+        final int BALCONY = 8;
+        final int BUILT_IN_KITCHEN = 9;
+        final int ABORT = 10;
+
+        Menu editMenu = new Menu("Welches Attribut soll bearbeitet werden?");
+        editMenu.addEntry("Straße", STREET);
+        editMenu.addEntry("Hausnummer", STREET_NR);
+        editMenu.addEntry("Stadt", CITY);
+        editMenu.addEntry("Postleitzahl", POSTAL_CODE);
+        editMenu.addEntry("Quadratmeter", SQUARE_AREA);
+        editMenu.addEntry("Stockwerk", FLOOR);
+        editMenu.addEntry("Miete", RENT);
+        editMenu.addEntry("Räume", ROOMS);
+        editMenu.addEntry("Mit Balkon", BALCONY);
+        editMenu.addEntry("Mit Einbauküche", BUILT_IN_KITCHEN);
+        editMenu.addEntry("Zurück zum Objektmenü", ABORT);
 
         //Verarbeite Eingabe
-        int response = estateCreationMenu.show();
-        switch (response) {
-            case APARTMENT:
-                editApartment();
-                break;
-            case HOUSE:
-                editHouse();
-                break;
-            case BACK:
-                return;
+        while (true) {
+            apartment.printDetails();
+            int response = editMenu.show();
+
+            switch (response) {
+                case STREET:
+                    apartment.setStreet(FormUtil.readString("Neue Straße"));
+                    break;
+                case STREET_NR:
+                    apartment.setStreet_Nr(FormUtil.readInt("Neue Hausnummer"));
+                    break;
+                case CITY:
+                    apartment.setCity(FormUtil.readString("Neue Stadt"));
+                    break;
+                case POSTAL_CODE:
+                    apartment.setPostal_Code(FormUtil.readInt("Neue Postleitzahl"));
+                    break;
+                case SQUARE_AREA:
+                    apartment.setSquare_Area(FormUtil.readFloat("Neue Quadratmeteranzahl"));
+                    break;
+                case FLOOR:
+                    apartment.setFloor(FormUtil.readInt("Neues Stockwerk"));
+                    break;
+                case RENT:
+                    apartment.setRent(FormUtil.readFloat("Neue Miete"));
+                    break;
+                case ROOMS:
+                    apartment.setRooms(FormUtil.readInt("Neue Anzahl an Räumen"));
+                    break;
+                case BALCONY:
+                    apartment.setBalcony(FormUtil.readBoolean("Hat Balkon (j/n)"));
+                    break;
+                case BUILT_IN_KITCHEN:
+                    apartment.setBuilt_In_Kitchen(FormUtil.readBoolean("Hat Einbauküche (j/n)"));
+                case ABORT:
+                    return;
+            }
+            apartment.save();
         }
     }
 
-    private static void editApartment() {
-        int id = FormUtil.readInt("Id des Objekts");
-        Apartment apartment = Apartment.loadById(id, agent.getId());
+    private static void editHouse(House house) {
 
-        if (apartment != null) {
-            //Menüoptionen
-            final int STREET = 0;
-            final int STREET_NR = 1;
-            final int CITY = 2;
-            final int POSTAL_CODE = 3;
-            final int SQUARE_AREA = 4;
-            final int FLOOR = 5;
-            final int RENT = 6;
-            final int ROOMS = 7;
-            final int BALCONY = 8;
-            final int BUILT_IN_KITCHEN = 9;
-            final int ABORT = 10;
+        //Menüoptionen
+        final int STREET = 0;
+        final int STREET_NR = 1;
+        final int CITY = 2;
+        final int POSTAL_CODE = 3;
+        final int SQUARE_AREA = 4;
 
-            Menu editMenu = new Menu("Welches Attribut soll bearbeitet werden?");
-            editMenu.addEntry("Straße", STREET);
-            editMenu.addEntry("Hausnummer", STREET_NR);
-            editMenu.addEntry("Stadt", CITY);
-            editMenu.addEntry("Postleitzahl", POSTAL_CODE);
-            editMenu.addEntry("Quadratmeter", SQUARE_AREA);
-            editMenu.addEntry("Stockwerk", FLOOR);
-            editMenu.addEntry("Miete", RENT);
-            editMenu.addEntry("Räume", ROOMS);
-            editMenu.addEntry("Mit Balkon", BALCONY);
-            editMenu.addEntry("Mit Einbauküche", BUILT_IN_KITCHEN);
-            editMenu.addEntry("Zurück zum Objektmenü", ABORT);
+        final int FLOORS = 5;
+        final int PRICE = 6;
+        final int GARDEN = 7;
 
-            //Verarbeite Eingabe
-            while (true) {
-                apartment.printDetails();
-                int response = editMenu.show();
+        final int ABORT = 10;
 
-                switch (response) {
-                    case STREET:
-                        apartment.setStreet(FormUtil.readString("Neue Straße"));
-                        break;
-                    case STREET_NR:
-                        apartment.setStreet_Nr(FormUtil.readInt("Neue Hausnummer"));
-                        break;
-                    case CITY:
-                        apartment.setCity(FormUtil.readString("Neue Stadt"));
-                        break;
-                    case POSTAL_CODE:
-                        apartment.setPostal_Code(FormUtil.readInt("Neue Postleitzahl"));
-                        break;
-                    case SQUARE_AREA:
-                        apartment.setSquare_Area(FormUtil.readFloat("Neue Quadratmeteranzahl"));
-                        break;
-                    case FLOOR:
-                        apartment.setFloor(FormUtil.readInt("Neues Stockwerk"));
-                        break;
-                    case RENT:
-                        apartment.setRent(FormUtil.readFloat("Neue Miete"));
-                        break;
-                    case ROOMS:
-                        apartment.setRooms(FormUtil.readInt("Neue Anzahl an Räumen"));
-                        break;
-                    case BALCONY:
-                        apartment.setBalcony(FormUtil.readBoolean("Hat Balkon (j/n)"));
-                        break;
-                    case BUILT_IN_KITCHEN:
-                        apartment.setBuilt_In_Kitchen(FormUtil.readBoolean("Hat Einbauküche (j/n)"));
-                    case ABORT:
-                        return;
-                }
-                apartment.save();
+        Menu editMenu = new Menu("Welches Attribut soll bearbeitet werden?");
+        editMenu.addEntry("Straße", STREET);
+        editMenu.addEntry("Hausnummer", STREET_NR);
+        editMenu.addEntry("Stadt", CITY);
+        editMenu.addEntry("Postleitzahl", POSTAL_CODE);
+        editMenu.addEntry("Quadratmeter", SQUARE_AREA);
+        editMenu.addEntry("Stockwerke", FLOORS);
+        editMenu.addEntry("Preis", PRICE);
+        editMenu.addEntry("Mit Garten", GARDEN);
+        editMenu.addEntry("Zurück zum Objektmenü", ABORT);
+
+        //Verarbeite Eingabe
+        while (true) {
+            house.printDetails();
+            int response = editMenu.show();
+
+            switch (response) {
+                case STREET:
+                    house.setStreet(FormUtil.readString("Neue Straße"));
+                    break;
+                case STREET_NR:
+                    house.setStreet_Nr(FormUtil.readInt("Neue Hausnummer"));
+                    break;
+                case CITY:
+                    house.setCity(FormUtil.readString("Neue Stadt"));
+                    break;
+                case POSTAL_CODE:
+                    house.setPostal_Code(FormUtil.readInt("Neue Postleitzahl"));
+                    break;
+                case SQUARE_AREA:
+                    house.setSquare_Area(FormUtil.readFloat("Neue Quadratmeteranzahl"));
+                    break;
+                case FLOORS:
+                    house.setFloors(FormUtil.readInt("Neues Anzahl Stockwerke"));
+                    break;
+                case PRICE:
+                    house.setPrice(FormUtil.readFloat("Neuer Preis"));
+                    break;
+                case GARDEN:
+                    house.setGarden(FormUtil.readBoolean("Mit Garten (j/n)"));
+                    break;
+                case ABORT:
+                    return;
             }
-
-        } else {
-            System.out.println("Apartment mit der Id " + id + " wurde nicht gefunden.");
-        }
-    }
-
-    private static void editHouse() {
-        int id = FormUtil.readInt("Id des Objekts");
-        House house = House.loadById(id, agent.getId());
-
-        if (house != null) {
-            //Menüoptionen
-            final int STREET = 0;
-            final int STREET_NR = 1;
-            final int CITY = 2;
-            final int POSTAL_CODE = 3;
-            final int SQUARE_AREA = 4;
-
-            final int FLOORS = 5;
-            final int PRICE = 6;
-            final int GARDEN = 7;
-
-            final int ABORT = 10;
-
-            Menu editMenu = new Menu("Welches Attribut soll bearbeitet werden?");
-            editMenu.addEntry("Straße", STREET);
-            editMenu.addEntry("Hausnummer", STREET_NR);
-            editMenu.addEntry("Stadt", CITY);
-            editMenu.addEntry("Postleitzahl", POSTAL_CODE);
-            editMenu.addEntry("Quadratmeter", SQUARE_AREA);
-            editMenu.addEntry("Stockwerke", FLOORS);
-            editMenu.addEntry("Preis", PRICE);
-            editMenu.addEntry("Mit Garten", GARDEN);
-            editMenu.addEntry("Zurück zum Objektmenü", ABORT);
-
-            //Verarbeite Eingabe
-            while (true) {
-                house.printDetails();
-                int response = editMenu.show();
-
-                switch (response) {
-                    case STREET:
-                        house.setStreet(FormUtil.readString("Neue Straße"));
-                        break;
-                    case STREET_NR:
-                        house.setStreet_Nr(FormUtil.readInt("Neue Hausnummer"));
-                        break;
-                    case CITY:
-                        house.setCity(FormUtil.readString("Neue Stadt"));
-                        break;
-                    case POSTAL_CODE:
-                        house.setPostal_Code(FormUtil.readInt("Neue Postleitzahl"));
-                        break;
-                    case SQUARE_AREA:
-                        house.setSquare_Area(FormUtil.readFloat("Neue Quadratmeteranzahl"));
-                        break;
-                    case FLOORS:
-                        house.setFloors(FormUtil.readInt("Neues Anzahl Stockwerke"));
-                        break;
-                    case PRICE:
-                        house.setPrice(FormUtil.readFloat("Neuer Preis"));
-                        break;
-                    case GARDEN:
-                        house.setGarden(FormUtil.readBoolean("Mit Garten (j/n)"));
-                        break;
-                    case ABORT:
-                        return;
-                }
-                house.save();
-            }
-
-        } else {
-            System.out.println("Apartment mit der Id " + id + " wurde nicht gefunden.");
+            house.save();
         }
     }
 
     private static void deleteEstate() {
-        int id = FormUtil.readInt("Id des Objektes");
-        Estate estate = Estate.loadById(id, agent.getId());
+        int id = FormUtil.readInt("ID des Objektes");
+        Estate estate = Estate.loadById(id);
         //Menüoptionen
         final int DELETE = 0;
         final int ABORT = 1;
 
         if (estate != null) {
 
-            //lösch menu
-            Menu maklerMenu = new Menu("Soll das Objekt mit der Id " + estate.getId() + " wirklich gelöscht werden?");
-            maklerMenu.addEntry("Löschen", DELETE);
-            maklerMenu.addEntry("NICHT löschen", ABORT);
+            if (estate.getAgent_Id() == agent.getId()) {
 
-            //Verarbeite Eingabe
-            while (true) {
-                int response = maklerMenu.show();
+                //lösch menu
+                Menu maklerMenu = new Menu("Soll das Objekt mit der ID " + estate.getId() + " wirklich gelöscht werden?");
+                maklerMenu.addEntry("Löschen", DELETE);
+                maklerMenu.addEntry("NICHT löschen", ABORT);
 
-                switch (response) {
-                    case DELETE:
-                        estate.delete();
-                    case ABORT:
-                        return;
+                //Verarbeite Eingabe
+                while (true) {
+                    int response = maklerMenu.show();
+
+                    switch (response) {
+                        case DELETE:
+                            estate.delete();
+                        case ABORT:
+                            return;
+                    }
                 }
+            } else {
+                System.out.println("Kein Zugriff auf Objekt mit der ID " + id + " möglich.");
             }
         } else {
-            System.out.println("Objekt mit der id " + id + " wurde nicht gefunden.");
+            System.out.println("Objekt mit der ID " + id + " wurde nicht gefunden.");
         }
     }
 

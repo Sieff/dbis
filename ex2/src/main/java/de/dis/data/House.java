@@ -31,16 +31,24 @@ public class House extends Estate {
         this.garden = garden;
     }
 
-    public static House loadById(int id, int agentId) {
+    public static House loadByEstate(Estate estate) {
+        House house = loadById(estate.getId());
+        if (house != null) {
+            house.getFromEstate(estate);
+            return house;
+        }
+        return null;
+    }
+
+    public static House loadById(int id) {
         try {
             // Hole Verbindung
             Connection con = DbConnectionManager.getInstance().getConnection();
 
             // Erzeuge Anfrage
-            String selectSQL = "SELECT * FROM house WHERE id = ? AND agent_id = ?";
+            String selectSQL = "SELECT * FROM house WHERE id = ?";
             PreparedStatement pstmt = con.prepareStatement(selectSQL);
             pstmt.setInt(1, id);
-            pstmt.setInt(2, agentId);
 
             // Führe Anfrage aus
             ResultSet rs = pstmt.executeQuery();
@@ -74,7 +82,7 @@ public class House extends Estate {
 
         try {
             // FC<ge neues Element hinzu, wenn das Objekt noch keine ID hat.
-            House existingEntity = House.loadById(getId(), getAgent_Id());
+            House existingEntity = House.loadById(getId());
 
 
             if (existingEntity != null) {
@@ -136,6 +144,6 @@ public class House extends Estate {
         System.out.println("Stockwerke: " + getFloors());
         System.out.println("Preis: " + getPrice());
         System.out.println("Mit Garten: " + getGarden());
-        System.out.println("");
+        System.out.println();
     }
 }

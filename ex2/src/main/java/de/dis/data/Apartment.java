@@ -49,28 +49,29 @@ public class Apartment extends Estate {
         this.built_in_kitchen = built_in_kitchen;
     }
 
-    public static Apartment loadById(int id, int agentId) {
+    public static Apartment loadByEstate(Estate estate) {
+        Apartment apartment = loadById(estate.getId());
+        if (apartment != null) {
+            apartment.getFromEstate(estate);
+            return apartment;
+        }
+        return null;
+    }
+
+    public static Apartment loadById(int id) {
         try {
             // Hole Verbindung
             Connection con = DbConnectionManager.getInstance().getConnection();
 
             // Erzeuge Anfrage
-            String selectSQL = "SELECT * FROM apartment WHERE id = ? and agent_id = ?";
+            String selectSQL = "SELECT * FROM apartment WHERE id = ?";
             PreparedStatement pstmt = con.prepareStatement(selectSQL);
             pstmt.setInt(1, id);
-            pstmt.setInt(2, agentId);
 
             // Führe Anfrage aus
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 Apartment ap = new Apartment();
-                ap.setId(rs.getInt("id"));
-                ap.setCity(rs.getString("city"));
-                ap.setPostal_Code(rs.getInt("postal_code"));
-                ap.setStreet(rs.getString("street"));
-                ap.setStreet_Nr(rs.getInt("street_nr"));
-                ap.setSquare_Area(rs.getFloat("square_area"));
-                ap.setAgent_Id(rs.getInt("agent_id"));
                 ap.setFloor(rs.getInt("floor"));
                 ap.setRent(rs.getFloat("rent"));
                 ap.setRooms(rs.getInt("rooms"));
@@ -94,7 +95,7 @@ public class Apartment extends Estate {
 
         try {
             // FC<ge neues Element hinzu, wenn das Objekt noch keine ID hat.
-            Apartment existingEntity = Apartment.loadById(getId(), getAgent_Id());
+            Apartment existingEntity = Apartment.loadById(getId());
 
 
             if (existingEntity != null) {
@@ -120,6 +121,7 @@ public class Apartment extends Estate {
 
                 pstmt.close();
                 System.out.println("Apartment mit ID " + getId() + " wurde bearbeitet.");
+                System.out.println();
             } else {
                 // Falls schon eine ID vorhanden ist, mache ein Update...
                 String updateSQL = "INSERT INTO apartment(city, postal_code, street, street_nr, square_area, agent_id, floor, rent, rooms, balcony, built_in_kitchen) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -161,6 +163,7 @@ public class Apartment extends Estate {
         System.out.println("Räume: " + getRooms());
         System.out.println("Mit Balkon: " + getBalcony());
         System.out.println("Mit Einbauküche: " + getBuilt_In_Kitchen());
-        System.out.println("");
+        System.out.println();
     }
+
 }

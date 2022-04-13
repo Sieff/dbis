@@ -4,12 +4,15 @@ public interface DatabaseObject {
     /**
      * Saves the object to the database.
      */
-    public void save();
+    void save();
 
     /**
      * Deletes the object in the database.
      */
-    public void delete();
+    void delete();
 
-    public void printDetails();
+    /**
+     * Prints details about the Object.
+     */
+    void printDetails();
 }

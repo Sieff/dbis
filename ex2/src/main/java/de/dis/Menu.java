@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 /**
- * Kleine Helferklasse für Menüs
+ * Kleine Helferklasse für Menüs.
  * Zuvor müssen mit addEntry Menüoptionen hinzugefügt werden. Mit
  * der Methode show() wird das Menü angezeigt und die mit der Option
  * angegebene Konstante zurückgeliefert.

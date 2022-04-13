@@ -197,6 +197,6 @@ public class EstateAgent implements DatabaseObject {
 		System.out.println("Adresse: " + getAddress());
 		System.out.println("Login: " + getLogin());
 		System.out.println("Passwort: " + getPassword());
-		System.out.println("");
+		System.out.println();
 	}
 }

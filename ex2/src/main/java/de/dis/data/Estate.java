@@ -70,16 +70,15 @@ public abstract class Estate implements DatabaseObject {
         this.agent_id = agent_id;
     }
 
-    public static Estate loadById(int id, int agentId) {
+    public static Estate loadById(int id) {
         try {
             // Hole Verbindung
             Connection con = DbConnectionManager.getInstance().getConnection();
 
             // Erzeuge Anfrage
-            String selectSQL = "SELECT * FROM estate WHERE id = ? AND agent_id = ?";
+            String selectSQL = "SELECT * FROM estate WHERE id = ?";
             PreparedStatement pstmt = con.prepareStatement(selectSQL);
             pstmt.setInt(1, id);
-            pstmt.setInt(2, agentId);
 
             // Führe Anfrage aus
             ResultSet rs = pstmt.executeQuery();
@@ -116,6 +115,8 @@ public abstract class Estate implements DatabaseObject {
 
             // Führe Anfrage aus
             pstmt.executeUpdate();
+            System.out.println("Objekt mit der ID " + getId() + " wurde gelöscht.");
+            System.out.println();
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -129,5 +130,14 @@ public abstract class Estate implements DatabaseObject {
         System.out.println("Stadt: " + getCity());
         System.out.println("Postleitzahl: " + getPostal_Code());
         System.out.println("Quadratmeter: " + getSquare_Area());
+    }
+
+    public void getFromEstate(Estate estate) {
+        setAgent_Id(estate.getAgent_Id());
+        setCity(estate.getCity());
+        setPostal_Code(estate.getPostal_Code());
+        setStreet(estate.getStreet());
+        setStreet_Nr(estate.getStreet_Nr());
+        setSquare_Area(estate.getSquare_Area());
     }
 }
