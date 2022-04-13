@@ -15,20 +15,24 @@ import java.sql.SQLException;
  * password varchar (255)
  * );
  */
-public class Makler {
+public class EstateAgent implements DatabaseObject {
 	private int id;
 	private String name;
 	private String address;
 	private String login;
 	private String password;
 
-	public int getId() { return id; }
+	public int getId() {
+		return id;
+	}
 
 	public String getName() {
 		return name;
 	}
 
-	public void setId(int id) { this.id = id; }
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	public void setName(String name) {
 		this.name = name;
@@ -63,7 +67,7 @@ public class Makler {
 	 * @param login ID des zu ladenden Maklers
 	 * @return Makler-Instanz
 	 */
-	public static Makler loadByLogin(String login) {
+	public static EstateAgent loadByLogin(String login) {
 		try {
 			// Hole Verbindung
 			Connection con = DbConnectionManager.getInstance().getConnection();
@@ -73,7 +77,7 @@ public class Makler {
 			PreparedStatement pstmt = con.prepareStatement(selectSQL);
 			pstmt.setString(1, login);
 
-			return Makler.load(pstmt);
+			return EstateAgent.load(pstmt);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -85,7 +89,7 @@ public class Makler {
 	 * @param id ID des zu ladenden Maklers
 	 * @return Makler-Instanz
 	 */
-	public static Makler loadById(int id) {
+	public static EstateAgent loadById(int id) {
 		try {
 			// Hole Verbindung
 			Connection con = DbConnectionManager.getInstance().getConnection();
@@ -94,19 +98,19 @@ public class Makler {
 			String selectSQL = "SELECT * FROM estate_agent WHERE id = ?";
 			PreparedStatement pstmt = con.prepareStatement(selectSQL);
 			pstmt.setInt(1, id);
-			return Makler.load(pstmt);
+			return EstateAgent.load(pstmt);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	private static Makler load(PreparedStatement statement) {
+	private static EstateAgent load(PreparedStatement statement) {
 		try {
 			// Führe Anfrage aus
 			ResultSet rs = statement.executeQuery();
 			if (rs.next()) {
-				Makler ts = new Makler();
+				EstateAgent ts = new EstateAgent();
 				ts.setId(rs.getInt("id"));
 				ts.setName(rs.getString("name"));
 				ts.setAddress(rs.getString("address"));
@@ -123,17 +127,14 @@ public class Makler {
 		return null;
 	}
 
-	/**
-	 * Speichert den Makler in der Datenbank. Ist noch keine ID vergeben
-	 * worden, wird die generierte Id von der DB geholt und dem Model übergeben.
-	 */
+	@Override
 	public void save() {
 		// Hole Verbindung
 		Connection con = DbConnectionManager.getInstance().getConnection();
 
 		try {
 			// FC<ge neues Element hinzu, wenn das Objekt noch keine ID hat.
-			Makler existingEntity = Makler.loadById(getId());
+			EstateAgent existingEntity = EstateAgent.loadById(getId());
 
 
 			if (existingEntity != null) {
@@ -173,10 +174,7 @@ public class Makler {
 		}
 	}
 
-	/**
-	 * Speichert den Makler in der Datenbank. Ist noch keine ID vergeben
-	 * worden, wird die generierte Id von der DB geholt und dem Model übergeben.
-	 */
+	@Override
 	public void delete() {
 		Connection con = DbConnectionManager.getInstance().getConnection();
 		try {
@@ -190,5 +188,15 @@ public class Makler {
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void printDetails() {
+		System.out.println("Ausgewählter Makler:");
+		System.out.println("Name: " + getName());
+		System.out.println("Adresse: " + getAddress());
+		System.out.println("Login: " + getLogin());
+		System.out.println("Passwort: " + getPassword());
+		System.out.println("");
 	}
 }
