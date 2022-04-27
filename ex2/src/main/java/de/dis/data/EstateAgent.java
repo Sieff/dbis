@@ -178,7 +178,7 @@ public class EstateAgent implements DatabaseObject {
 	public void delete() {
 		Connection con = DbConnectionManager.getInstance().getConnection();
 		try {
-			String updateSQL = "DELETE FROM estate_agent WHERE id = ?";
+			String updateSQL = "DELETE estate_agent, estate FROM estate_agent left join estate on estate.agent_id = estate_agent.id WHERE estate_agent.id = ?";
 			PreparedStatement pstmt = con.prepareStatement(updateSQL);
 			pstmt.setInt(1, getId());
 

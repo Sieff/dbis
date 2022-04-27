@@ -269,35 +269,73 @@ public class EstateMenuHandler {
     private static void deleteEstate() {
         int id = FormUtil.readInt("ID des Objektes");
         Estate estate = Estate.loadById(id);
-        //Menüoptionen
-        final int DELETE = 0;
-        final int ABORT = 1;
 
         if (estate != null) {
 
             if (estate.getAgent_Id() == agent.getId()) {
 
-                //lösch menu
-                Menu maklerMenu = new Menu("Soll das Objekt mit der ID " + estate.getId() + " wirklich gelöscht werden?");
-                maklerMenu.addEntry("Löschen", DELETE);
-                maklerMenu.addEntry("NICHT löschen", ABORT);
+                Apartment apartment = Apartment.loadByEstate(estate);
+                if (apartment != null) {
+                    deleteApartment(apartment);
+                    return;
+                }
 
-                //Verarbeite Eingabe
-                while (true) {
-                    int response = maklerMenu.show();
-
-                    switch (response) {
-                        case DELETE:
-                            estate.delete();
-                        case ABORT:
-                            return;
-                    }
+                House house = House.loadByEstate(estate);
+                if (house != null) {
+                    deleteHouse(house);
+                    return;
                 }
             } else {
                 System.out.println("Kein Zugriff auf Objekt mit der ID " + id + " möglich.");
             }
         } else {
             System.out.println("Objekt mit der ID " + id + " wurde nicht gefunden.");
+        }
+    }
+
+    private static void deleteApartment(Apartment apartment) {
+        //Menüoptionen
+        final int DELETE = 0;
+        final int ABORT = 1;
+
+        //lösch menu
+        Menu maklerMenu = new Menu("Soll das Apartment mit der ID " + apartment.getId() + " wirklich gelöscht werden?");
+        maklerMenu.addEntry("Löschen", DELETE);
+        maklerMenu.addEntry("NICHT löschen", ABORT);
+
+        //Verarbeite Eingabe
+        while (true) {
+            int response = maklerMenu.show();
+
+            switch (response) {
+                case DELETE:
+                    apartment.delete();
+                case ABORT:
+                    return;
+            }
+        }
+    }
+
+    private static void deleteHouse(House house) {
+        //Menüoptionen
+        final int DELETE = 0;
+        final int ABORT = 1;
+
+        //lösch menu
+        Menu maklerMenu = new Menu("Soll das Haus mit der ID " + house.getId() + " wirklich gelöscht werden?");
+        maklerMenu.addEntry("Löschen", DELETE);
+        maklerMenu.addEntry("NICHT löschen", ABORT);
+
+        //Verarbeite Eingabe
+        while (true) {
+            int response = maklerMenu.show();
+
+            switch (response) {
+                case DELETE:
+                    house.delete();
+                case ABORT:
+                    return;
+            }
         }
     }
 

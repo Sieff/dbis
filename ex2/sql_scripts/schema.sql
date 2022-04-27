@@ -15,7 +15,7 @@ create table estate (
     street varchar (255),
     street_nr integer,
     square_area decimal,
-    agent_id integer references estate_agent(id)
+    agent_id integer references estate_agent(id) on delete cascade
 );
 
 -- vertical partitioning
@@ -34,7 +34,8 @@ create table house (
     floors integer,
     price decimal,
     garden boolean,
-    primary key (id)
+    primary key (id),
+    foreign key (agent_id) references estate_agent(id) on delete cascade
 ) inherits (estate);
 
 drop table if exists apartment cascade;
@@ -45,7 +46,8 @@ create table apartment (
     rooms integer,
     balcony boolean,
     built_in_kitchen boolean,
-    primary key (id)
+    primary key (id),
+    foreign key (agent_id) references estate_agent(id) on delete cascade
 ) inherits (estate);
 
 drop table if exists contract cascade;
@@ -60,6 +62,8 @@ create table tenancy_contract (
     start_date date,
     duration_months integer,
     additional_costs decimal,
+    renter_id integer references person(id) on delete cascade,
+    apartment_id integer references apartment(id) on delete cascade,
     primary key (contract_number)
 ) inherits (contract);
 
@@ -67,21 +71,7 @@ drop table if exists purchase_contract cascade;
 create table purchase_contract (
     number_of_installments integer,
     interest_rate decimal,
+    buyer_id integer references person(id) on delete cascade,
+    house_id integer references house(id) on delete cascade,
     primary key (contract_number)
 ) inherits (contract);
-
-drop table if exists rent cascade;
-create table rent (
-    contract_number integer references tenancy_contract(contract_number),
-    renter_id integer references person(id),
-    apartment_id integer references apartment(id),
-    primary key (contract_number, apartment_id)
-);
-
-drop table if exists sell cascade;
-create table sell (
-    contract_number integer references purchase_contract(contract_number),
-    buyer_id integer references person(id),
-    house_id integer references house(id),
-    primary key (contract_number, house_id)
-);

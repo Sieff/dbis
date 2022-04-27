@@ -54,13 +54,6 @@ public class House extends Estate {
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 House ho = new House();
-                ho.setId(rs.getInt("id"));
-                ho.setCity(rs.getString("city"));
-                ho.setPostal_Code(rs.getInt("postal_code"));
-                ho.setStreet(rs.getString("street"));
-                ho.setStreet_Nr(rs.getInt("street_nr"));
-                ho.setSquare_Area(rs.getFloat("square_area"));
-                ho.setAgent_Id(rs.getInt("agent_id"));
                 ho.setFloors(rs.getInt("floors"));
                 ho.setPrice(rs.getFloat("price"));
                 ho.setGarden(rs.getBoolean("garden"));
@@ -145,5 +138,25 @@ public class House extends Estate {
         System.out.println("Preis: " + getPrice());
         System.out.println("Mit Garten: " + getGarden());
         System.out.println();
+    }
+
+    @Override
+    public void delete() {
+        super.delete();
+
+        Connection con = DbConnectionManager.getInstance().getConnection();
+        try {
+            String updateSQL = "with delete_sell as (DELETE FROM sell WHERE house_id = ? returning contract_number as cn) delete from contract where contract_number in (select cn from delete_sell)";
+            PreparedStatement pstmt = con.prepareStatement(updateSQL);
+            pstmt.setInt(1, getId());
+
+            // Führe Anfrage aus
+            pstmt.executeUpdate();
+            System.out.println("Vertrag mit Haus " + getId() + " wurde gelöscht.");
+            System.out.println();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -166,4 +166,24 @@ public class Apartment extends Estate {
         System.out.println();
     }
 
+    @Override
+    public void delete() {
+        super.delete();
+
+        Connection con = DbConnectionManager.getInstance().getConnection();
+        try {
+            String updateSQL = "with delete_rent as (DELETE FROM rent WHERE apartment_id = ? returning contract_number as cn) delete from contract where contract_number in (select cn from delete_rent)";
+            PreparedStatement pstmt = con.prepareStatement(updateSQL);
+            pstmt.setInt(1, getId());
+
+            // Führe Anfrage aus
+            pstmt.executeUpdate();
+            System.out.println("Vertrag mit Apartment " + getId() + " wurde gelöscht.");
+            System.out.println();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

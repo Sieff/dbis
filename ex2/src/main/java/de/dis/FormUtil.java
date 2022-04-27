@@ -3,6 +3,10 @@ package main.java.de.dis;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -92,5 +96,24 @@ public class FormUtil {
 			}
 			System.err.println("Ungültige Eingabe: Eingabe war weder j noch n!");
 		}
+	}
+
+	public static Date readDate(String label) {
+
+		Date ret = null;
+		boolean finished = false;
+
+		while(!finished) {
+			String str_date = readString(label);
+			try {
+				DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+				Date date = formatter.parse(str_date);
+				ret = date;
+				finished = true;
+			} catch (ParseException exception) {
+				System.err.println("Ungültige Eingabe: Bitte geben Sie ein Datum im format DD.MM.YYYY an!");
+			}
+		}
+		return ret;
 	}
 }

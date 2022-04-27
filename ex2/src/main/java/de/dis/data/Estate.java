@@ -133,6 +133,7 @@ public abstract class Estate implements DatabaseObject {
     }
 
     public void getFromEstate(Estate estate) {
+        setId(estate.getId());
         setAgent_Id(estate.getAgent_Id());
         setCity(estate.getCity());
         setPostal_Code(estate.getPostal_Code());
