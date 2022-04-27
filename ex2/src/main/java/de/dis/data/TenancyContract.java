@@ -68,13 +68,15 @@ public class TenancyContract extends Contract {
         Connection con = DbConnectionManager.getInstance().getConnection();
 
         try {
-            String insertSQL = "Insert INTO tenancy_contract(date, place, start_date, duration_months, additional_costs) VALUES (?, ?, ?, ?, ?)";
+            String insertSQL = "Insert INTO tenancy_contract(date, place, start_date, duration_months, additional_costs, renter_id, apartment_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement pstmt = con.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
             pstmt.setDate(1, getDateAsSQLDate());
             pstmt.setString(2, getPlace());
             pstmt.setDate(3, getStartDateAsSQLDate());
             pstmt.setInt(4, getDurationMonths());
             pstmt.setFloat(5, getAdditionalCosts());
+            pstmt.setInt(6, getRenterId());
+            pstmt.setInt(7, getApartmentId());
 
             pstmt.executeUpdate();
 
@@ -85,7 +87,7 @@ public class TenancyContract extends Contract {
             rs.close();
             pstmt.close();
             System.out.println("Vertrag mit ID " + getId() + " wurde erzeugt.");
-
+            System.out.println();
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
@@ -117,6 +119,9 @@ public class TenancyContract extends Contract {
                 tenancyContract.setId(rs.getInt("contract_number"));
                 tenancyContract.setAdditionalCosts(rs.getFloat("additional_costs"));
                 tenancyContract.setDurationMonths(rs.getInt("duration_months"));
+                tenancyContract.setStartDate(rs.getDate("start_date"));
+                tenancyContract.setRenterId(rs.getInt("renter_id"));
+                tenancyContract.setApartmentId(rs.getInt("apartment_id"));
 
                 rs.close();
                 pstmt.close();
@@ -128,30 +133,12 @@ public class TenancyContract extends Contract {
         return null;
     }
 
-    public void sign(int renterId, int apartmentId) {
-        Connection con = DbConnectionManager.getInstance().getConnection();
-        try {
-            String updateSQL = "INSERT INTO rent(contract_number, renter_id, apartment_id) VALUES (?, ?, ?)";
-            PreparedStatement pstmt = con.prepareStatement(updateSQL);
-
-            // Setze Anfrage Parameter
-            pstmt.setInt(1, getId());
-            pstmt.setInt(2, renterId);
-            pstmt.setInt(3, apartmentId);
-
-            pstmt.executeUpdate();
-
-            System.out.println("Der Vertrag mit der ID " + getId() + " wurde unterschrieben.");
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-        }
-    }
-
     @Override
     public void printDetails() {
         super.printDetails();
         System.out.println("Anfangsdatum: " + getPrettyStartDate());
         System.out.println("Laufzeit: " + getDurationMonths());
         System.out.println("Zusätzliche Kosten: " + getAdditionalCosts());
+        System.out.println();
     }
 }

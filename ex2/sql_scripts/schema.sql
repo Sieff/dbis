@@ -30,7 +30,6 @@ create table person (
 
 drop table if exists house cascade;
 create table house (
-    seller_id integer references person(id),
     floors integer,
     price decimal,
     garden boolean,
@@ -40,7 +39,6 @@ create table house (
 
 drop table if exists apartment cascade;
 create table apartment (
-    renter_id integer references person(id),
     floor integer,
     rent decimal,
     rooms integer,

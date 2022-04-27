@@ -21,24 +21,24 @@ VALUES (3, 'Simon', 'Unge', 'Madeira');
 SELECT setval('person_id_seq', (SELECT MAX(id) from person));
 
 INSERT INTO
-    apartment(id, city, postal_code, street, street_nr, square_area, agent_id, renter_id, floor, rent, rooms, balcony, built_in_kitchen)
-VALUES (1, 'O´beck city', '27711', 'Hinter der Loge', '7', 99.5, 1, 2, 1, 600, 2, false, true);
+    apartment(id, city, postal_code, street, street_nr, square_area, agent_id, floor, rent, rooms, balcony, built_in_kitchen)
+VALUES (1, 'O´beck city', '27711', 'Hinter der Loge', '7', 99.5, 1, 1, 600, 2, false, true);
 INSERT INTO
-    apartment(id, city, postal_code, street, street_nr, square_area, agent_id, renter_id, floor, rent, rooms, balcony, built_in_kitchen)
-VALUES (2, 'Hamburg', '20537', 'Borgfelder Straße', '16', 12.5, 2, 3, 0, 1800.5, 4, true, false);
+    apartment(id, city, postal_code, street, street_nr, square_area, agent_id, floor, rent, rooms, balcony, built_in_kitchen)
+VALUES (2, 'Hamburg', '20537', 'Borgfelder Straße', '16', 12.5, 2, 0, 1800.5, 4, true, false);
 INSERT INTO
-    apartment(id, city, postal_code, street, street_nr, square_area, agent_id, renter_id, floor, rent, rooms, balcony, built_in_kitchen)
-VALUES (3, 'Zaun', '876543', 'Dicke Gasse', '1', 33, 1, 1, 15, 1400, 1, false, false);
+    apartment(id, city, postal_code, street, street_nr, square_area, agent_id, floor, rent, rooms, balcony, built_in_kitchen)
+VALUES (3, 'Zaun', '876543', 'Dicke Gasse', '1', 33, 1, 15, 1400, 1, false, false);
 
 INSERT INTO
-    house(id, city, postal_code, street, street_nr, square_area, agent_id, seller_id, floors, price, garden)
-VALUES (4, 'Hamburg', '20251', 'Reeperbahn', '111', 54.43, 3, 2, 4, 200000.34, false);
+    house(id, city, postal_code, street, street_nr, square_area, agent_id, floors, price, garden)
+VALUES (4, 'Hamburg', '20251', 'Reeperbahn', '111', 54.43, 3, 4, 200000.34, false);
 INSERT INTO
-    house(id, city, postal_code, street, street_nr, square_area, agent_id, seller_id, floors, price, garden)
-VALUES (5, 'Osterholz Scharmbek', '23432', 'Feldstraße', '1', 154.43, 1, 1, 1, 199999.34, true);
+    house(id, city, postal_code, street, street_nr, square_area, agent_id, floors, price, garden)
+VALUES (5, 'Osterholz Scharmbek', '23432', 'Feldstraße', '1', 154.43, 1, 1, 199999.34, true);
 INSERT INTO
-    house(id, city, postal_code, street, street_nr, square_area, agent_id, seller_id, floors, price, garden)
-VALUES (6, 'New York', '99999', 'Boulevard of broken dreams', '133', 9.99, 2, 2, 1, 922922.34, false);
+    house(id, city, postal_code, street, street_nr, square_area, agent_id, floors, price, garden)
+VALUES (6, 'New York', '99999', 'Boulevard of broken dreams', '133', 9.99, 2, 1, 922922.34, false);
 SELECT setval('estate_id_seq', (SELECT MAX(id) from estate));
 
 INSERT INTO

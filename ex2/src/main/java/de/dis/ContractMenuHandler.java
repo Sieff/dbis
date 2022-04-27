@@ -132,7 +132,8 @@ public class ContractMenuHandler {
         person.setFirstName(FormUtil.readString("Vorname"));
         person.setLastName(FormUtil.readString("Nachname"));
         person.setAddress(FormUtil.readString("Adresse"));
-        person.save(
+        person.save();
+    }
 
     public static void viewAllContracts() {
         List<Contract> contractList = Contract.getAll();
@@ -140,20 +141,29 @@ public class ContractMenuHandler {
             for (Contract contract : contractList) {
                 PurchaseContract purchaseContract = PurchaseContract.loadByContract(contract);
                 if (purchaseContract != null) {
-                    purchaseContract.printDetails();
-                    return;
+                    if (checkOwnership(purchaseContract.getHouseId())) {
+                        purchaseContract.printDetails();
+                        continue;
+                    }
                 }
 
                 TenancyContract tenancyContract = TenancyContract.loadByContract(contract);
                 if (tenancyContract != null) {
-                    tenancyContract.printDetails();
-                    return;
+                    if (checkOwnership(tenancyContract.getApartmentId())) {
+                        tenancyContract.printDetails();
+                        continue;
+                    }
                 }
             }
-            FormUtil.readString("Drücke eine beliebige Taste um zurückzugehen");
+            FormUtil.readString("Drücke die Enter-Taste um zurückzugehen.");
         } else {
-            System.err.println("Es ist ein Fehler aufgetreten");
+            System.err.println("Es ist ein Fehler aufgetreten.");
         }
+    }
+
+    private static boolean checkOwnership(int estateId) {
+        Estate estate = Estate.loadById(estateId);
+        return estate != null && estate.getAgent_Id() == agent.getId();
     }
 
 }

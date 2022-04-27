@@ -153,6 +153,7 @@ public class EstateAgent implements DatabaseObject {
 
 				pstmt.close();
 				System.out.println("Makler mit dem Login " + getLogin() + " wurde bearbeitet.");
+				System.out.println();
 			} else {
 				// Falls schon eine ID vorhanden ist, mache ein Update...
 				String updateSQL = "INSERT INTO estate_agent(name, address, login, password) VALUES (?, ?, ?, ?)";
@@ -168,6 +169,7 @@ public class EstateAgent implements DatabaseObject {
 
 				pstmt.close();
 				System.out.println("Makler mit dem Login "+ getLogin()+" wurde erzeugt.");
+				System.out.println();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -178,7 +180,7 @@ public class EstateAgent implements DatabaseObject {
 	public void delete() {
 		Connection con = DbConnectionManager.getInstance().getConnection();
 		try {
-			String updateSQL = "DELETE estate_agent, estate FROM estate_agent left join estate on estate.agent_id = estate_agent.id WHERE estate_agent.id = ?";
+			String updateSQL = "DELETE FROM estate_agent WHERE id = ?";
 			PreparedStatement pstmt = con.prepareStatement(updateSQL);
 			pstmt.setInt(1, getId());
 

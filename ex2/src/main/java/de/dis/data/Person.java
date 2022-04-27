@@ -90,6 +90,7 @@ public class Person {
             rs.close();
             pstmt.close();
             System.out.println("Person mit ID " + getId() + " wurde erzeugt.");
+            System.out.println();
 
         } catch (SQLException exception) {
             exception.printStackTrace();

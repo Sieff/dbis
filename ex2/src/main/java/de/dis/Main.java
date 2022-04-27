@@ -47,6 +47,7 @@ public class Main {
 					break;
 				case MENU_CONTRACTS:
 					validateAgent(VALIDATE_FOR_CONTRACTS);
+					break;
 				case QUIT:
 					return;
 			}

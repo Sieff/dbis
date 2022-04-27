@@ -99,6 +99,7 @@ public class House extends Estate {
 
                 pstmt.close();
                 System.out.println("Haus mit ID " + getId() + " wurde bearbeitet.");
+                System.out.println();
             } else {
                 // Falls schon eine ID vorhanden ist, mache ein Update...
                 String updateSQL = "INSERT INTO house(city, postal_code, street, street_nr, square_area, agent_id, floors, price, garden) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -125,6 +126,7 @@ public class House extends Estate {
                 rs.close();
                 pstmt.close();
                 System.out.println("Haus mit ID " + getId() + " wurde erzeugt.");
+                System.out.println();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -140,23 +142,4 @@ public class House extends Estate {
         System.out.println();
     }
 
-    @Override
-    public void delete() {
-        super.delete();
-
-        Connection con = DbConnectionManager.getInstance().getConnection();
-        try {
-            String updateSQL = "with delete_sell as (DELETE FROM sell WHERE house_id = ? returning contract_number as cn) delete from contract where contract_number in (select cn from delete_sell)";
-            PreparedStatement pstmt = con.prepareStatement(updateSQL);
-            pstmt.setInt(1, getId());
-
-            // Führe Anfrage aus
-            pstmt.executeUpdate();
-            System.out.println("Vertrag mit Haus " + getId() + " wurde gelöscht.");
-            System.out.println();
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 }

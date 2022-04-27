@@ -46,12 +46,14 @@ public class PurchaseContract extends Contract {
         Connection con = DbConnectionManager.getInstance().getConnection();
 
         try {
-            String insertSQL = "Insert INTO purchase_contract(date, place, number_of_installments, interest_rate) VALUES (?, ?, ?, ?)";
+            String insertSQL = "Insert INTO purchase_contract(date, place, number_of_installments, interest_rate, buyer_id, house_id) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement pstmt = con.prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
             pstmt.setDate(1, getDateAsSQLDate());
             pstmt.setString(2, getPlace());
             pstmt.setInt(3, getNumberOfInstallments());
             pstmt.setFloat(4, getInterestRate());
+            pstmt.setInt(5, getBuyerId());
+            pstmt.setInt(6, getHouseId());
 
             pstmt.executeUpdate();
 
@@ -62,27 +64,9 @@ public class PurchaseContract extends Contract {
             rs.close();
             pstmt.close();
             System.out.println("Vertrag mit ID " + getId() + " wurde erzeugt.");
+            System.out.println();
         } catch (SQLException exception) {
             exception.printStackTrace();
-        }
-    }
-
-    public void sign(int renterId, int apartmentId) {
-        Connection con = DbConnectionManager.getInstance().getConnection();
-        try {
-            String updateSQL = "INSERT INTO sell(contract_number, buyer_id, house_id) VALUES (?, ?, ?)";
-            PreparedStatement pstmt = con.prepareStatement(updateSQL);
-
-            // Setze Anfrage Parameter
-            pstmt.setInt(1, getId());
-            pstmt.setInt(2, renterId);
-            pstmt.setInt(3, apartmentId);
-
-            pstmt.executeUpdate();
-
-            System.out.println("Der Vertrag mit der ID " + getId() + " wurde unterschrieben.");
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
         }
     }
 
@@ -112,6 +96,8 @@ public class PurchaseContract extends Contract {
                 purchaseContract.setId(rs.getInt("contract_number"));
                 purchaseContract.setNumberOfInstallments(rs.getInt("number_of_installments"));
                 purchaseContract.setInterestRate(rs.getFloat("interest_rate"));
+                purchaseContract.setBuyerId(rs.getInt("buyer_id"));
+                purchaseContract.setHouseId(rs.getInt("house_id"));
                 rs.close();
                 pstmt.close();
                 return purchaseContract;
