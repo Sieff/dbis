@@ -1,6 +1,5 @@
 package main.java.de.dis;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.sql.*;
 import java.util.ArrayList;
@@ -9,7 +8,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 
 public class Main {
 
@@ -28,17 +26,17 @@ public class Main {
 
         Connection c1 = setup_new_connection();
         c1.setAutoCommit(false);
+        c1.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
         //c1.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         //c1.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
         Connection c2 = setup_new_connection();
         c2.setAutoCommit(false);
+        c2.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
         //c2.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         //c2.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
-        
-        
+
         //S1 = r1(x) w2(x) c2 w1(x) r1(x) c1
         List<RunnableOperation> operations = new ArrayList<>(Arrays.asList(
-
                 new RunnableOperation(c1, 'r', "SELECT name FROM dissheet3 WHERE id = 1;"),
                 new RunnableOperation(c2, 'w', "UPDATE dissheet3 SET name = 'Mickey' WHERE id = 1;"),
                 new RunnableOperation(c2, 'c', "COMMIT;"),
@@ -69,24 +67,22 @@ public class Main {
 
         System.out.println("Finished all threads");
 
-
         // GET Table at the end
         Connection i2 = setup_new_connection();
         Statement cs2 = i2.createStatement();
         ResultSet rs = cs2.executeQuery("SELECT id, name FROM dissheet3 ORDER BY id");
         while (rs.next())
-            System.out.println(Integer.toString(rs.getInt("id")) + "," + rs.getString("name"));
+            System.out.println(rs.getInt("id") + ", " + rs.getString("name"));
         cs2.close();
 
     }
-
 
     public static Connection setup_new_connection() {
 
         try {
             // Holen der Einstellungen aus der db.properties Datei
             Properties properties = new Properties();
-            FileInputStream stream = new FileInputStream(new File("db.properties"));
+            FileInputStream stream = new FileInputStream("db.properties");
             properties.load(stream);
             stream.close();
 
@@ -101,6 +97,4 @@ public class Main {
         return null;
     }
 
-
 }
-
