@@ -16,37 +16,60 @@ public class Main {
         // Setup
         Connection i1 = setup_new_connection();
         Statement cs = i1.createStatement();
-        cs.execute("DROP TABLE if exists dissheet3;" +
-                "CREATE TABLE dissheet3 (" +
+        cs.execute("DROP TABLE if exists dis2sheet3;" +
+                "CREATE TABLE dis2sheet3 (" +
                 "id integer primary key," +
                 "name VARCHAR(50));" +
-                "INSERT INTO dissheet3 (id, name) VALUES (1, 'Goofy'),(2, 'Donald'),(3, 'Tick')," +
+                "INSERT INTO dis2sheet3 (id, name) VALUES (1, 'Goofy'),(2, 'Donald'),(3, 'Tick')," +
                 "                                  (4, 'Trick'),(5, 'Track');");
         i1.close();
 
         Connection c1 = setup_new_connection();
         c1.setAutoCommit(false);
-        c1.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-        //c1.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        //c1.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+        c1.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         //c1.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
         Connection c2 = setup_new_connection();
         c2.setAutoCommit(false);
-        c2.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-        //c2.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        //c2.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+        c2.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         //c2.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
 
         //S1 = r1(x) w2(x) c2 w1(x) r1(x) c1
-        List<RunnableOperation> operations = new ArrayList<>(Arrays.asList(
-                new RunnableOperation(c1, 'r', "SELECT name FROM dissheet3 WHERE id = 1;"),
-                new RunnableOperation(c2, 'w', "UPDATE dissheet3 SET name = 'Mickey' WHERE id = 1;"),
+        List<RunnableOperation> operations1 = new ArrayList<>(Arrays.asList(
+                new RunnableOperation(c1, 'r', "SELECT name FROM dis2sheet3 WHERE id = 1;"),
+                new RunnableOperation(c2, 'w', "UPDATE dis2sheet3 SET name = 'Mickey' WHERE id = 1;"),
                 new RunnableOperation(c2, 'c', "COMMIT;"),
-                new RunnableOperation(c1, 'w', "UPDATE dissheet3 SET name = name || ' + Max' WHERE id = 1;"),
-                new RunnableOperation(c1, 'r', "SELECT name FROM dissheet3 WHERE id = 1;"),
+                new RunnableOperation(c1, 'w', "UPDATE dis2sheet3 SET name = name || ' + Max' WHERE id = 1;"),
+                new RunnableOperation(c1, 'r', "SELECT name FROM dis2sheet3 WHERE id = 1;"),
                 new RunnableOperation(c1, 'c', "COMMIT;"))
         );
+
+        //S2 = r1(x) w2(x) c2 r1(x) c1
+        List<RunnableOperation> operations2 = new ArrayList<>(Arrays.asList(
+                new RunnableOperation(c1, 'r', "SELECT name FROM dis2sheet3 WHERE id = 1;"),
+                new RunnableOperation(c2, 'w', "UPDATE dis2sheet3 SET name = 'Mickey' WHERE id = 1;"),
+                new RunnableOperation(c2, 'c', "COMMIT;"),
+                new RunnableOperation(c1, 'r', "SELECT name FROM dis2sheet3 WHERE id = 1;"),
+                new RunnableOperation(c1, 'c', "COMMIT;")
+        ));
+
+        //S3 = r2(x) w1(x) w1(y) c1 r2(y) w2(x) w2(y) c2
+
+        List<RunnableOperation> operations3 = new ArrayList<>(Arrays.asList(
+                new RunnableOperation(c2, 'r', "SELECT name FROM dis2sheet3 WHERE id = 1;"),
+                new RunnableOperation(c1, 'w', "UPDATE dis2sheet3 SET name = 'Mickey' WHERE id = 1;"),
+                new RunnableOperation(c1, 'w', "UPDATE dis2sheet3 SET name = 'Mickey' WHERE id = 2;"),
+                new RunnableOperation(c1, 'c', "COMMIT;"),
+                new RunnableOperation(c2, 'r', "SELECT name FROM dis2sheet3 WHERE id = 2;"),
+                new RunnableOperation(c2, 'w', "UPDATE dis2sheet3 SET name = 'Flipper' WHERE id = 1;"),
+                new RunnableOperation(c2, 'w', "UPDATE dis2sheet3 SET name = 'Dumbo' WHERE id = 2;"),
+                new RunnableOperation(c2, 'c', "COMMIT;")
+        ));
+
         ExecutorService executor_t1 = Executors.newFixedThreadPool(1);
         ExecutorService executor_t2 = Executors.newFixedThreadPool(1);
-        for (RunnableOperation op : operations) {
+        for (RunnableOperation op : operations3) {
 
             if (op.c == c1)
                 executor_t1.execute(op);
@@ -70,7 +93,7 @@ public class Main {
         // GET Table at the end
         Connection i2 = setup_new_connection();
         Statement cs2 = i2.createStatement();
-        ResultSet rs = cs2.executeQuery("SELECT id, name FROM dissheet3 ORDER BY id");
+        ResultSet rs = cs2.executeQuery("SELECT id, name FROM dis2sheet3 ORDER BY id");
         while (rs.next())
             System.out.println(rs.getInt("id") + ", " + rs.getString("name"));
         cs2.close();

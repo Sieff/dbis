@@ -20,36 +20,28 @@ public class RunnableOperation implements Runnable {
     }
 
     public void run(){
-        System.out.println(Thread.currentThread().getName()+"sql = " + preparedOperation());
         Statement st;
         try {
-            Statement lock = c.createStatement();
-            lock.executeQuery(getLockOperation());
             st = c.createStatement();
             if (readwrite == 'r') {
-                ResultSet rs = st.executeQuery(preparedOperation());
-                while (rs.next())
-                    System.out.println(rs.getString("name"));
+                Statement lock = c.createStatement();
+                lock.executeQuery(getLockOperation());
+                ResultSet rs = st.executeQuery(op);
+                //while (rs.next())
+                    //System.out.println(rs.getString("name"));
             } else if (readwrite == 'w') {
-                st.execute(preparedOperation());
+                Statement lock = c.createStatement();
+                lock.executeQuery(getLockOperation());
+                st.execute(op);
             } else if (readwrite == 'c') {
                 c.commit();
             }
 
+            System.out.println(Thread.currentThread().getName()+"sql = " + op);
+
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-    }
-
-    private String preparedOperation() {
-        String rtn = op.strip();
-        rtn = !rtn.endsWith(";") ? rtn + ";" : rtn;
-        rtn = switch (readwrite) {
-            case 'r' -> op.replace(";", " FOR SHARE;");
-            case 'w' -> op.replace(";", " FOR UPDATE;");
-            default -> rtn;
-        };
-        return rtn;
     }
 
     private String getLockOperation() {
@@ -71,6 +63,6 @@ public class RunnableOperation implements Runnable {
     private String getLockOperationForUpdate() {
         String tablename = op.toLowerCase(Locale.ROOT).split("set")[0].split("update")[1];
         String predicate = op.toLowerCase(Locale.ROOT).split("where")[1].split(";")[0];
-        return "SELECT FROM" + tablename + "WHERE" + predicate + "FOR UPDATE";
+        return "SELECT FROM" + tablename + "WHERE" + predicate + "FOR UPDATE;";
     }
 }
