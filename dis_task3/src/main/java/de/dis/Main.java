@@ -1,4 +1,4 @@
-package de.dis;
+package main.java.de.dis;
 
 import java.io.File;
 import java.io.FileInputStream;
