@@ -67,7 +67,6 @@ public class DWBranch {
             }
 
             pstmt.close();
-            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -90,7 +89,6 @@ public class DWBranch {
             pstmt.setString(4, getShop());
 
             pstmt.executeUpdate();
-            pstmt.close();
 
         } catch (SQLException e) {
             e.printStackTrace();

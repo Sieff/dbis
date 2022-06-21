@@ -41,7 +41,6 @@ public class DWProduct {
             }
 
             pstmt.close();
-            con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
