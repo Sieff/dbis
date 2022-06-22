@@ -76,7 +76,7 @@ public class DWFact {
             while (array[index] == 1) {
                 index++;
             }
-            System.out.println("Index is: " + index +", faulty data set is in the next 200 entries.");
+            System.out.println("Index is: " + index +", faulty data set expected in the next 200 entries.");
             System.out.println("Skip the next 200 and do them one by one.");
             facts.subList(index, index + 200).forEach(DWFact::save);
             System.out.println("Continue with batch insert after removing the 200.");
